@@ -1,0 +1,309 @@
+/**
+ * Blog detail page component
+ * Features rich content display, social sharing, and navigation
+ */
+
+import { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { 
+  ArrowLeft, 
+  Calendar, 
+  Share2, 
+  Linkedin, 
+  Twitter, 
+  Link as LinkIcon,
+  AlertCircle
+} from 'lucide-react';
+import DOMPurify from 'dompurify';
+import blogService from '../services/blogService';
+import { formatBlogDate } from '../utils/formatDate';
+import { ROUTES, SITE_CONFIG } from '../utils/constants';
+
+const BlogDetail = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [blog, setBlog] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Load blog data
+  useEffect(() => {
+    const loadBlog = async () => {
+      try {
+        if (!id) {
+          setError('Blog ID is required');
+          return;
+        }
+
+        const blogData = await blogService.getBlogById(id);
+        if (!blogData) {
+          setError('Blog post not found');
+          return;
+        }
+
+        setBlog(blogData);
+      } catch (err) {
+        console.error('Error loading blog:', err);
+        setError('Failed to load blog post');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBlog();
+  }, [id]);
+
+  // Share functionality
+  const shareUrl = window.location.href;
+  const shareTitle = blog ? `${blog.title} by Sahil Salaria` : '';
+
+  const handleShare = (platform) => {
+    const encodedUrl = encodeURIComponent(shareUrl);
+    const encodedTitle = encodeURIComponent(shareTitle);
+    
+    const urls = {
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+      twitter: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
+      copy: () => {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          // You could add a toast notification here
+          alert('Link copied to clipboard!');
+        });
+      }
+    };
+
+    if (platform === 'copy') {
+      urls.copy();
+    } else {
+      window.open(urls[platform], '_blank', 'width=600,height=400');
+    }
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="glass-card p-8 text-center"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-8 h-8 border-3 border-primary-500 border-t-transparent rounded-full mx-auto mb-4"
+          />
+          <p className="text-gray-600 dark:text-gray-400">Loading blog post...</p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !blog) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card p-8 text-center max-w-md"
+        >
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+            {error === 'Blog post not found' ? 'Post Not Found' : 'Error'}
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {error || 'The blog post you\'re looking for doesn\'t exist.'}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate(-1)}
+              className="px-6 py-2 glass-card hover:glass-border transition-all duration-200 text-gray-700 dark:text-gray-300"
+            >
+              Go Back
+            </motion.button>
+            <Link to={ROUTES.BLOG}>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+              >
+                View All Posts
+              </motion.button>
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  return (
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="min-h-screen"
+    >
+      {/* Hero Section */}
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8">
+        {blog.image && (
+          <div className="absolute inset-0 z-0">
+            <img
+              src={blog.image}
+              alt={blog.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+          </div>
+        )}
+
+        <div className="relative z-10 max-w-4xl mx-auto">
+          {/* Back Button */}
+          <motion.div variants={itemVariants} className="mb-8">
+            <Link
+              to={ROUTES.BLOG}
+              className="inline-flex items-center space-x-2 glass-card px-4 py-2 hover:glass-border transition-all duration-200 text-white"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Blog</span>
+            </Link>
+          </motion.div>
+
+          {/* Title and Meta */}
+          <motion.div variants={itemVariants} className="text-center">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+              {blog.title}
+            </h1>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-white/80">
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4" />
+                <span>{formatBlogDate(blog.date)}</span>
+              </div>
+              <div>Published by Sahil Salaria</div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Content Section */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            variants={itemVariants}
+            className="glass-card p-8 md:p-12"
+          >
+            {/* Blog Content */}
+            <div
+              className="prose prose-lg max-w-none prose-gray dark:prose-invert prose-headings:gradient-text prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-blockquote:border-primary-500 prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-2 prose-code:py-1 prose-code:rounded"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(blog.content)
+              }}
+            />
+
+            {/* Share Section */}
+            <motion.div
+              variants={itemVariants}
+              className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                    Share this post
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    Help others discover this content
+                  </p>
+                </div>
+                
+                <div className="flex space-x-3">
+                  <motion.button
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleShare('linkedin')}
+                    className="p-3 rounded-xl glass-card hover:glass-border transition-all duration-200 text-blue-600 hover:text-blue-700"
+                    aria-label="Share on LinkedIn"
+                  >
+                    <Linkedin className="w-5 h-5" />
+                  </motion.button>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleShare('twitter')}
+                    className="p-3 rounded-xl glass-card hover:glass-border transition-all duration-200 text-sky-500 hover:text-sky-600"
+                    aria-label="Share on Twitter"
+                  >
+                    <Twitter className="w-5 h-5" />
+                  </motion.button>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleShare('copy')}
+                    className="p-3 rounded-xl glass-card hover:glass-border transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    aria-label="Copy link"
+                  >
+                    <LinkIcon className="w-5 h-5" />
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Author Section */}
+            <motion.div
+              variants={itemVariants}
+              className="mt-8 p-6 glass rounded-xl"
+            >
+              <p className="text-center text-gray-600 dark:text-gray-400 italic">
+                Published by <span className="font-semibold gradient-text">Sahil Salaria</span> — 
+                Dedicated to innovation in Quality & Automation.
+              </p>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Navigation */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <Link to={ROUTES.BLOG}>
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-purple text-white font-semibold rounded-xl hover:from-primary-600 hover:to-accent-purple transition-all duration-200"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span>View All Posts</span>
+            </motion.button>
+          </Link>
+        </div>
+      </section>
+    </motion.div>
+  );
+};
+
+export default BlogDetail;
