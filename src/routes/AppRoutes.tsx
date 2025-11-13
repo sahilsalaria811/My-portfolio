@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Application routing configuration
  * Defines all routes and lazy loading for performance
@@ -7,8 +8,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Layout from '../components/Layout';
-import { ROUTES } from '../utils/constants';
-
 // Lazy load components for better performance
 const Home = lazy(() => import('../pages/Home'));
 const BlogList = lazy(() => import('../pages/BlogList'));
@@ -42,7 +41,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="blog" element={<BlogList />} />
-          <Route path="blog/:id" element={<BlogDetail />} />
+          <Route path="blog/:slug" element={<BlogDetail />} />
           <Route path="create-blog" element={<CreateBlog />} />
         </Route>
 

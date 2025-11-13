@@ -5,13 +5,13 @@
 
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { 
-  ArrowRight, 
-  Code, 
-  ShieldCheck, 
-  GitBranch, 
-  Server, 
-  Globe, 
+import {
+  ArrowRight,
+  Code,
+  ShieldCheck,
+  GitBranch,
+  Server,
+  Globe,
   Brain,
   Mail,
   Phone,
@@ -48,8 +48,8 @@ const Home = () => {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: { duration: 0.6, ease: "easeOut" }
     }
@@ -112,30 +112,22 @@ const Home = () => {
             variants={itemVariants}
             className="text-4xl md:text-6xl lg:text-7xl font-bold gradient-text mb-6"
           >
-            Hi, I'm Sahil Salaria
+            Hi, I’m Sahil Salaria — Crafting Quality, Automation & AI-Driven Assurance.
           </motion.h1>
 
           <motion.h2
             variants={itemVariants}
             className="text-xl md:text-2xl lg:text-3xl text-gray-800 dark:text-gray-200 mb-4"
           >
-            Building Quality, Precision, and Trust in Every Product
+            Team Lead • Quality Analyst • Automation & AI Innovator
           </motion.h2>
 
-          <motion.div
-            variants={itemVariants}
-            className="text-lg md:text-xl text-primary-600 dark:text-primary-400 font-semibold mb-8"
-          >
-            Team Lead • Quality Analyst • Automation & AI Enthusiast
-          </motion.div>
 
           <motion.p
             variants={itemVariants}
-            className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed"
+            className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto leading-relaxed"
           >
-            I lead QA teams focused on delivering seamless, bug-free user experiences. 
-            My current focus is blending automation, AI, and DevOps to redefine how 
-            testing empowers smarter product decisions.
+            I lead high-performing QA teams dedicated to delivering flawless software experiences. At the intersection of automation, AI and DevOps, I design smarter workflows that detect issues early, speed up releases, and ensure trust in every product.
           </motion.p>
 
           <motion.div
@@ -149,7 +141,7 @@ const Home = () => {
               className="px-8 py-4 bg-gradient-to-r from-primary-500 to-accent-purple text-white font-semibold rounded-xl hover:from-primary-600 hover:to-accent-purple transition-all duration-200 flex items-center justify-center space-x-2"
             >
               <Target className="w-5 h-5" />
-              <span>View My Work</span>
+              <span>My Skills</span>
             </motion.button>
 
             <Link to={ROUTES.BLOG}>
@@ -158,7 +150,7 @@ const Home = () => {
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 glass-card hover:glass-border text-gray-800 dark:text-gray-200 font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2"
               >
-                <span>Read My Blog</span>
+                <span>Explore My Blog</span>
                 <ArrowRight className="w-5 h-5" />
               </motion.button>
             </Link>
@@ -167,25 +159,24 @@ const Home = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mb-10"
           >
             <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-6">
               About Me
             </h2>
             <div className="space-y-6">
               <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                I'm a passionate Quality Analyst and emerging developer driven by curiosity and precision.
-                I specialize in API Testing, Automation, and AI-powered QA workflows — ensuring every release meets the highest standards.
+                I am a dedicated Quality Analyst and emerging full-stack enthusiast, driven by precision, curiosity and the constant pursuit of improvement. With a background in API testing, automation frameworks and QA strategy, I’ve built systems that accelerate delivery and raise reliability standards across teams.
               </p>
               <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                Currently, I'm leading QA initiatives and experimenting with modern tech stacks, including Python, Selenium, and cloud integrations.
+                Currently, I’m expanding into DevOps, cloud-native deployment and AI-augmented testing — because the future of quality isn’t just finding bugs — it’s preventing them.
               </p>
             </div>
 
@@ -194,15 +185,15 @@ const Home = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-12 glass-card p-8 inline-block"
+              className="mt-8 glass-card p-8 inline-block"
             >
               <blockquote className="text-xl md:text-2xl italic text-gray-800 dark:text-gray-200">
-                "Quality is not an act, it's a habit — and innovation keeps that habit alive."
+                “Quality isn’t a milestone—it’s a habit. And innovation keeps that habit alive.”
               </blockquote>
             </motion.div>
 
             {/* Highlights */}
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -215,7 +206,7 @@ const Home = () => {
                   Test Planning & Automation
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Comprehensive test frameworks and automation strategies
+                  Expert in Test Planning, API & UI Automation, Regression Frameworks
                 </p>
               </motion.div>
 
@@ -231,7 +222,7 @@ const Home = () => {
                   Technical Proficiency
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Postman, Java, Python, Git, and modern testing tools
+                  Solid experience with Java, Python (intermediate), Git, CI/CD pipelines
                 </p>
               </motion.div>
 
@@ -247,7 +238,7 @@ const Home = () => {
                   AI & Innovation
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Exploring DevOps and AI-driven QA methodologies
+                  AI integration in QA — embedding AI logic into automation flows (in progress)
                 </p>
               </motion.div>
             </div>
@@ -256,14 +247,14 @@ const Home = () => {
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-20 px-4 sm:px-6 lg:px-8">
+      <section id="skills" className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mb-10"
           >
             <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-6">
               Technical Skills & Tools
@@ -283,8 +274,8 @@ const Home = () => {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   whileHover={{ scale: 1.02, y: -5 }}
                   viewport={{ once: true }}
-                  transition={{ 
-                    duration: 0.5, 
+                  transition={{
+                    duration: 0.5,
                     delay: index * 0.1,
                     ease: "easeOut"
                   }}
@@ -297,11 +288,11 @@ const Home = () => {
                     >
                       <IconComponent className="w-8 h-8 text-white" />
                     </motion.div>
-                    
+
                     <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                       {skill.title}
                     </h3>
-                    
+
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                       {skill.description}
                     </p>
@@ -313,8 +304,37 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Blog Teaser Section */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="glass-card p-10"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-4">From My Blog</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">Insights at the intersection of QA, Automation & AI</p>
+            <p className="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-8">
+              Dive into my latest perspectives on how automation transforms quality assurance, why AI is reshaping testing workflows, and what the next-gen developer-QA collaboration looks like.
+            </p>
+            <Link to={ROUTES.BLOG}>
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 bg-gradient-to-r from-primary-500 to-accent-purple text-white font-semibold rounded-xl hover:from-primary-600 hover:to-accent-purple transition-all duration-200 inline-flex items-center space-x-2"
+              >
+                <span>Read the Blog</span>
+                <ArrowRight className="w-5 h-5" />
+              </motion.button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Contact Section */}
-      <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8">
+      <section id="contact" className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -326,13 +346,13 @@ const Home = () => {
             <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-6">
               Let's Connect
             </h2>
-            
-            <p className="text-lg text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
-              I'm open to collaborations, QA consulting, or discussing how AI can elevate 
+
+            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+              I'm open to collaborations, QA consulting, or discussing how AI can elevate
               automation and testing. If you have a project or want to exchange ideas — let's talk.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {/* Email */}
               <motion.a
                 href={`mailto:${SITE_CONFIG.email}`}

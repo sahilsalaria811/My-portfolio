@@ -1,6 +1,6 @@
-# Sahil Salaria — Portfolio & Blog Website
+# Sahil Salaria — Portfolio & Blog
 
-A modern, futuristic portfolio and blog website built with React, featuring glassmorphism design, smooth animations, and a powerful content management system.
+A modern, futuristic portfolio + blog built with React + Vite, TailwindCSS and Firebase. It features glassmorphism, smooth animations, dark/light theme, rich blog tooling and SEO.
 
 ![Portfolio Screenshot](https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop)
 
@@ -14,33 +14,36 @@ A modern, futuristic portfolio and blog website built with React, featuring glas
 - **Gradient Backgrounds** with animated transitions
 
 ### 📝 Blog Management
-- **Rich Text Editor** with formatting, images, and code blocks
-- **Local Storage** with Firebase-ready architecture
-- **Search Functionality** to find blog posts
-- **Social Sharing** integration (LinkedIn, Twitter, Copy Link)
-- **SEO-Friendly** URLs and meta content
+- **Rich Text Editor (React Quill)**
+- **Create / Read / Update / Delete**
+- **Drafts vs Published** toggle
+- **Tags** with filtering and search
+- **SEO fields**: `metaTitle`, `seoDescription`
+- **View counter** with Firestore `increment`
+- **Timestamps**: created + last updated (serverTimestamp)
+- **Author tracking** (name + uid)
+- **Search** across title/excerpt/seoDescription/tags
+- **Image handling**: paste any public URL (upload to Firebase Storage optional)
+- **Social sharing** (LinkedIn, X/Twitter, Copy link)
 
 ### 🔐 Authentication
-- **Secure Admin Login** with bcrypt password hashing
-- **Session Management** with 7-day expiration
-- **Protected Routes** for content creation
-- **Firebase Auth Ready** for scalable user management
+- **Firebase Auth (Email/Password)**
+- **Auth-guarded routes** for editor
+- **Local session fallback** when Firebase is not configured
 
 ### ⚡ Performance
-- **Lazy Loading** for optimal bundle splitting
-- **Code Splitting** by routes and components
-- **Optimized Images** with proper loading strategies
-- **Minimal Dependencies** for fast load times
+- **Lazy loaded routes**
+- **Code-splitting** and Suspense fallbacks
+- **Image lazy-loading** on cards
 
 ## 🛠️ Tech Stack
 
 - **Frontend:** React 18 + Vite
-- **Styling:** TailwindCSS with custom glassmorphism utilities
+- **Styling:** TailwindCSS (custom glass utilities)
 - **Animation:** Framer Motion
 - **Routing:** React Router DOM
 - **Editor:** React Quill
-- **Authentication:** bcryptjs
-- **Storage:** localStorage (Firebase-ready)
+- **Backend-as-a-Service:** Firebase (Auth, Firestore, Storage)
 - **Icons:** Lucide React
 
 ## 📦 Installation
@@ -56,23 +59,20 @@ A modern, futuristic portfolio and blog website built with React, featuring glas
    npm install
    ```
 
-3. **Set up environment variables:**
+3. **Set up environment variables (Firebase):**
    ```bash
    cp .env.example .env
    ```
-   
    Edit `.env` with your configuration:
    ```env
-   # Admin Password (default: admin123)
-   VITE_ADMIN_PASSWORD_HASH=$2a$10$K8yF1c.Wn7rJ5v4Bb2xO9u8Q3zN9Lb1F5pD7gK6M2aE8vR4nC1xTy
-   
-   # Optional Firebase Configuration
-   VITE_FIREBASE_API_KEY=your-api-key
-   VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-   VITE_FIREBASE_PROJECT_ID=your-project-id
-   VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-   VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
-   VITE_FIREBASE_APP_ID=1:123456789:web:abcdef123456
+   # Firebase (required for cloud mode; app works in local mode without these)
+   VITE_FIREBASE_API_KEY=
+   VITE_FIREBASE_AUTH_DOMAIN=
+   VITE_FIREBASE_PROJECT_ID=
+   VITE_FIREBASE_STORAGE_BUCKET=
+   VITE_FIREBASE_MESSAGING_SENDER_ID=
+   VITE_FIREBASE_APP_ID=
+   VITE_FIREBASE_MEASUREMENT_ID=
    ```
 
 4. **Start development server:**
@@ -80,7 +80,7 @@ A modern, futuristic portfolio and blog website built with React, featuring glas
    npm run dev
    ```
 
-5. **Build for production:**
+5. **Build for production (regenerates sitemap + robots):**
    ```bash
    npm run build
    ```
@@ -94,31 +94,25 @@ A modern, futuristic portfolio and blog website built with React, featuring glas
 
 ### Writing Your First Blog Post
 
-1. **Login as Admin:**
+1. **Login (Firebase):**
    - Navigate to `/login`
-   - Enter password: `admin123` (default)
-   - You'll be redirected to the blog creation page
+   - Sign in with your Email/Password (created in Firebase Auth)
 
 2. **Create a Blog Post:**
    - Go to `/create-blog` (or click "Create" in the navigation)
-   - Enter a compelling title
-   - Add a featured image URL (optional)
-   - Write your content using the rich text editor
-   - Click "Publish Post"
+   - Fill in title, optional image URL, content, tags, SEO fields
+   - Choose Published or Draft
+   - Click "Publish"
 
 3. **View Your Blog:**
    - Navigate to `/blog` to see all posts
    - Click on any post to read the full content
-   - Use the search bar to find specific posts
+   - Use the search and tag filters to find posts
 
 ### Customizing Content
 
 #### Home Page Content
-Edit `src/utils/constants.js` to update:
-- Personal information and contact details
-- Skills and expertise areas
-- Social media links
-- Site configuration
+Update texts in the components directly (primarily `src/pages/Home.jsx`). Global details like socials and skills live in `src/utils/constants.js`.
 
 #### Styling and Design
 - **Colors:** Modify the color palette in `tailwind.config.js`
@@ -131,37 +125,31 @@ Edit `src/utils/constants.js` to update:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `VITE_ADMIN_PASSWORD_HASH` | Bcrypt hash of admin password | Yes |
 | `VITE_FIREBASE_API_KEY` | Firebase API key | Optional |
 | `VITE_FIREBASE_AUTH_DOMAIN` | Firebase auth domain | Optional |
 | `VITE_FIREBASE_PROJECT_ID` | Firebase project ID | Optional |
 | `VITE_FIREBASE_STORAGE_BUCKET` | Firebase storage bucket | Optional |
 | `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase messaging sender ID | Optional |
 | `VITE_FIREBASE_APP_ID` | Firebase app ID | Optional |
+| `VITE_FIREBASE_MEASUREMENT_ID` | Firebase analytics measurement id | Optional |
+| `VITE_SITE_URL` | Canonical site URL (used for sitemap & robots) | Recommended |
 
-### Generating Password Hash
-
-To generate a new admin password hash:
-
-```javascript
-import bcrypt from 'bcryptjs';
-
-// Generate hash for your password
-const hash = await bcrypt.hash('your-new-password', 10);
-console.log(hash);
-```
-
-Update the `VITE_ADMIN_PASSWORD_HASH` in your `.env` file.
+> `VITE_SITE_URL` should match the domain you serve in production (e.g. `https://sahil-portfolio-751a1.web.app` or your custom domain). The build step uses it for canonical links in `sitemap.xml` and `robots.txt`.
 
 ### Firebase Setup (Optional)
+### Automated SEO Assets
 
-For production deployment with persistent storage:
+- `npm run build` now calls a post-build script that fetches published blogs and writes:
+  - `dist/sitemap.xml` with canonical URLs for Home, Blog index, and every published post slug.
+  - `dist/robots.txt` allowing crawlers while hiding `/login` and `/create-blog`.
+- The script prefers live Firestore data (using `VITE_FIREBASE_PROJECT_ID` & `VITE_FIREBASE_API_KEY`) and falls back to local placeholder posts if Firebase is not configured.
+- A development `public/robots.txt` is kept in-sync so crawlers see the sitemap during local preview as well.
+
 
 1. Create a Firebase project
-2. Enable Firestore Database
-3. Set up authentication (optional)
-4. Add your Firebase config to `.env`
-5. Update Firestore security rules:
+2. Enable Firestore Database and Authentication (Email/Password)
+3. Add your Firebase config to `.env`
+4. (Optional) Security rules example:
 
 ```javascript
 rules_version = '2';
@@ -216,7 +204,8 @@ src/
 │   ├── Layout.jsx        # Main layout wrapper
 │   ├── Navbar.jsx        # Navigation component
 │   ├── RichTextEditor.jsx# Rich text editor
-│   └── ThemeToggle.jsx   # Dark/light theme toggle
+│   ├── ThemeToggle.jsx   # Dark/light theme toggle
+│   └── Toast.jsx         # Toast notifications
 ├── pages/                # Page components
 │   ├── BlogDetail.jsx    # Single blog post view
 │   ├── BlogList.jsx      # Blog posts listing
@@ -232,36 +221,28 @@ src/
 ├── utils/                # Utility functions
 │   ├── constants.js      # App constants
 │   └── formatDate.js     # Date formatting
-├── App.jsx               # Root component
-├── main.jsx             # App entry point
-└── index.css            # Global styles
+├── App.tsx               # Root component
+├── main.tsx              # App entry point
+└── index.css             # Global styles
 ```
 
-## 🚀 Deployment
+## 🚀 Deployment (Firebase Hosting)
 
-### Vercel (Recommended)
-1. Push code to GitHub
-2. Import project in Vercel
-3. Set environment variables in Vercel dashboard
-4. Deploy automatically on git push
+1. Install CLI: `npm i -g firebase-tools` and `firebase login`
+2. Build: `npm run build`
+3. Ensure `firebase.json` exists (public: `dist`, SPA rewrites enabled)
+4. Deploy: `firebase deploy --only hosting`
+5. Hosting URL will be printed in the terminal
 
-### Netlify
-1. Build the project: `npm run build`
-2. Drag `dist` folder to Netlify deploy
-3. Set environment variables in Netlify dashboard
+## 🔍 SEO & Sharing
 
-### Manual Deployment
-1. Build: `npm run build`
-2. Upload `dist` folder contents to your web server
-3. Configure server to serve `index.html` for all routes
-
-## 🔍 SEO Optimization
-
-- **Meta Tags:** Properly configured title and descriptions
+- **Dynamic `<title>`** from blog `metaTitle` (fallback to title)
+- **Meta description** from `seoDescription`
 - **Semantic HTML:** Structured content with proper headings
 - **Image Alt Text:** Descriptive alt attributes for all images
 - **Clean URLs:** SEO-friendly routing structure
 - **Performance:** Optimized loading and Core Web Vitals
+- **Open Graph/Twitter Cards:** ready to extend
 
 ## 🤝 Contributing
 
@@ -277,14 +258,14 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 👨‍💻 About the Developer
 
-**Sahil Salaria** - Quality Analyst & Emerging Developer
+**Sahil Salaria** — Team Lead • Quality Analyst • Automation & AI Innovator
 
 - 📧 Email: sahilsalaria811@gmail.com
 - 📱 Phone: +91 9878977894 / +91 9781677894
 - 💼 LinkedIn: [linkedin.com/in/sahilsalaria](https://linkedin.com/in/sahilsalaria)
-- 🐱 GitHub: [github.com/sahilsalaria](https://github.com/sahilsalaria)
-- 🐦 Twitter: [twitter.com/sahilsalaria](https://twitter.com/sahilsalaria)
+- 🐱 GitHub: [github.com/sahilsalaria811](https://github.com/sahilsalaria811)
+- 🐦 X/Twitter: [x.com/Iamsahilsalaria](https://x.com/Iamsahilsalaria)
 
 ---
 
-Made with ⚡ precision, ☁ curiosity, and 💡 purpose by Sahil Salaria.# My-portfolio
+Made with ⚡ precision, ☁ curiosity, and 💡 purpose by Sahil Salaria.

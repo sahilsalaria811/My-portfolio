@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, BookOpen, PlusCircle } from 'lucide-react';
+import { Search, BookOpen, PlusCircle, Tag, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import BlogCard from '../components/BlogCard';
 import blogService from '../services/blogService';
@@ -16,6 +16,8 @@ const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTag, setSelectedTag] = useState(null);
+  const [availableTags, setAvailableTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -23,10 +25,17 @@ const BlogList = () => {
   useEffect(() => {
     const loadBlogs = async () => {
       try {
-        const blogData = await blogService.getAllBlogs();
+        const isAuth = authService.isAuthenticated();
+        setIsAuthenticated(isAuth);
+
+        // Load blogs (including drafts if authenticated)
+        const blogData = await blogService.getAllBlogs(isAuth);
         setBlogs(blogData);
         setFilteredBlogs(blogData);
-        setIsAuthenticated(authService.isAuthenticated());
+
+        // Load available tags
+        const tags = await blogService.getAllTags();
+        setAvailableTags(tags);
       } catch (error) {
         console.error('Error loading blogs:', error);
       } finally {
@@ -37,19 +46,32 @@ const BlogList = () => {
     loadBlogs();
   }, []);
 
-  // Handle search
+  // Handle search and filtering
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredBlogs(blogs);
-      return;
+    let filtered = blogs;
+
+    // Filter by tag if selected
+    if (selectedTag) {
+      filtered = filtered.filter(blog =>
+        blog.tags && blog.tags.some(tag =>
+          tag.toLowerCase() === selectedTag.toLowerCase()
+        )
+      );
     }
 
-    const filtered = blogs.filter(blog => 
-      blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      blog.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const lowercaseQuery = searchQuery.toLowerCase();
+      filtered = filtered.filter(blog =>
+        blog.title.toLowerCase().includes(lowercaseQuery) ||
+        blog.excerpt?.toLowerCase().includes(lowercaseQuery) ||
+        blog.seoDescription?.toLowerCase().includes(lowercaseQuery) ||
+        (blog.tags && blog.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery)))
+      );
+    }
+
     setFilteredBlogs(filtered);
-  }, [searchQuery, blogs]);
+  }, [searchQuery, selectedTag, blogs]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -64,8 +86,8 @@ const BlogList = () => {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: { duration: 0.6, ease: "easeOut" }
     }
@@ -108,18 +130,45 @@ const BlogList = () => {
           {/* Search Bar */}
           <motion.div
             variants={itemVariants}
-            className="max-w-md mx-auto relative"
+            className="max-w-2xl mx-auto space-y-4"
           >
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search blog posts..."
+                className="w-full pl-10 pr-4 py-3 glass-card border-0 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              />
             </div>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search blog posts..."
-              className="w-full pl-10 pr-4 py-3 glass-card border-0 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:outline-none"
-            />
+
+            {/* Tag Filter */}
+            {availableTags.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2">
+                <span className="text-sm text-gray-600 dark:text-gray-400 self-center">Filter by:</span>
+                {availableTags.map((tag) => (
+                  <motion.button
+                    key={tag}
+                    onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 flex items-center space-x-1 ${selectedTag === tag
+                      ? 'bg-primary-500 text-white'
+                      : 'glass-card text-gray-700 dark:text-gray-300 hover:glass-border'
+                      }`}
+                  >
+                    <Tag className="w-3 h-3" />
+                    <span>{tag}</span>
+                    {selectedTag === tag && (
+                      <X className="w-3 h-3 ml-1" />
+                    )}
+                  </motion.button>
+                ))}
+              </div>
+            )}
           </motion.div>
 
           {/* Create Blog Button (Admin Only) */}
@@ -210,7 +259,7 @@ const BlogList = () => {
             className="text-center mt-12"
           >
             <p className="text-gray-600 dark:text-gray-400">
-              Found {filteredBlogs.length} post{filteredBlogs.length !== 1 ? 's' : ''} 
+              Found {filteredBlogs.length} post{filteredBlogs.length !== 1 ? 's' : ''}
               {searchQuery && ` for "${searchQuery}"`}
             </p>
           </motion.div>

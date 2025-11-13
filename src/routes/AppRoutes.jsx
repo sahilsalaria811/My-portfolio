@@ -42,7 +42,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="blog" element={<BlogList />} />
-          <Route path="blog/:id" element={<BlogDetail />} />
+          <Route path="blog/:slug" element={<BlogDetail />} />
           <Route path="create-blog" element={<CreateBlog />} />
         </Route>
 

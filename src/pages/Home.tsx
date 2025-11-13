@@ -5,13 +5,13 @@
 
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { 
-  ArrowRight, 
-  Code, 
-  ShieldCheck, 
-  GitBranch, 
-  Server, 
-  Globe, 
+import {
+  ArrowRight,
+  Code,
+  ShieldCheck,
+  GitBranch,
+  Server,
+  Globe,
   Brain,
   Mail,
   Phone,
@@ -48,8 +48,8 @@ const Home = () => {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: { duration: 0.6, ease: "easeOut" }
     }
@@ -133,8 +133,8 @@ const Home = () => {
             variants={itemVariants}
             className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed"
           >
-            I lead QA teams focused on delivering seamless, bug-free user experiences. 
-            My current focus is blending automation, AI, and DevOps to redefine how 
+            I lead QA teams focused on delivering seamless, bug-free user experiences.
+            My current focus is blending automation, AI, and DevOps to redefine how
             testing empowers smarter product decisions.
           </motion.p>
 
@@ -149,7 +149,7 @@ const Home = () => {
               className="px-8 py-4 bg-gradient-to-r from-primary-500 to-accent-purple text-white font-semibold rounded-xl hover:from-primary-600 hover:to-accent-purple transition-all duration-200 flex items-center justify-center space-x-2"
             >
               <Target className="w-5 h-5" />
-              <span>View My Work</span>
+              <span>My Skills</span>
             </motion.button>
 
             <Link to={ROUTES.BLOG}>
@@ -283,8 +283,8 @@ const Home = () => {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   whileHover={{ scale: 1.02, y: -5 }}
                   viewport={{ once: true }}
-                  transition={{ 
-                    duration: 0.5, 
+                  transition={{
+                    duration: 0.5,
                     delay: index * 0.1,
                     ease: "easeOut"
                   }}
@@ -297,11 +297,11 @@ const Home = () => {
                     >
                       <IconComponent className="w-8 h-8 text-white" />
                     </motion.div>
-                    
+
                     <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                       {skill.title}
                     </h3>
-                    
+
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                       {skill.description}
                     </p>
@@ -326,9 +326,9 @@ const Home = () => {
             <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-6">
               Let's Connect
             </h2>
-            
+
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
-              I'm open to collaborations, QA consulting, or discussing how AI can elevate 
+              I'm open to collaborations, QA consulting, or discussing how AI can elevate
               automation and testing. If you have a project or want to exchange ideas — let's talk.
             </p>
 

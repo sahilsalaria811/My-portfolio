@@ -4,12 +4,12 @@
  */
 
 import { motion } from 'framer-motion';
-import { 
-  Mail, 
-  Phone, 
-  Linkedin, 
-  Github, 
-  Twitter, 
+import {
+  Mail,
+  Phone,
+  Linkedin,
+  Github,
+  Twitter,
   Heart,
   Zap,
   Cloud,
@@ -19,27 +19,27 @@ import { SITE_CONFIG } from '../utils/constants';
 
 const Footer = () => {
   const socialLinks = [
-    { 
-      href: `mailto:${SITE_CONFIG.email}`, 
-      icon: Mail, 
+    {
+      href: `mailto:${SITE_CONFIG.email}`,
+      icon: Mail,
       label: 'Email',
       color: 'hover:text-red-500'
     },
-    { 
-      href: SITE_CONFIG.social.linkedin, 
-      icon: Linkedin, 
+    {
+      href: SITE_CONFIG.social.linkedin,
+      icon: Linkedin,
       label: 'LinkedIn',
       color: 'hover:text-blue-500'
     },
-    { 
-      href: SITE_CONFIG.social.github, 
-      icon: Github, 
+    {
+      href: SITE_CONFIG.social.github,
+      icon: Github,
       label: 'GitHub',
       color: 'hover:text-gray-800 dark:hover:text-gray-200'
     },
-    { 
-      href: SITE_CONFIG.social.twitter, 
-      icon: Twitter, 
+    {
+      href: SITE_CONFIG.social.twitter,
+      icon: Twitter,
       label: 'Twitter',
       color: 'hover:text-sky-500'
     }
@@ -78,7 +78,7 @@ const Footer = () => {
               Sahil Salaria
             </h3>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Building quality, precision, and trust in every product through 
+              Building quality, precision, and trust in every product through
               innovative QA solutions and automation.
             </p>
             <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
@@ -174,7 +174,7 @@ const Footer = () => {
               >
                 <Heart className="w-4 h-4 text-red-500" />
               </motion.div>
-              <span>using React & TailwindCSS</span>
+              <span>by Sahil Salaria</span>
             </div>
           </div>
         </motion.div>

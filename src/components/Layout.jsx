@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import ToastContainer from './Toast';
 
 const Layout = () => {
   return (
@@ -30,6 +31,9 @@ const Layout = () => {
 
         <Footer />
       </div>
+
+      {/* Toast Notifications */}
+      <ToastContainer />
     </div>
   );
 };

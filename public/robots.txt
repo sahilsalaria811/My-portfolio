@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /create-blog
+Disallow: /login
+
+Sitemap: https://sahil-portfolio-751a1.web.app/sitemap.xml
+

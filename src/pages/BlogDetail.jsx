@@ -3,46 +3,83 @@
  * Features rich content display, social sharing, and navigation
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  ArrowLeft, 
-  Calendar, 
-  Share2, 
-  Linkedin, 
-  Twitter, 
+import {
+  ArrowLeft,
+  Calendar,
+  Share2,
+  Linkedin,
+  Twitter,
   Link as LinkIcon,
-  AlertCircle
+  AlertCircle,
+  Tag,
+  Eye,
+  User,
+  Clock
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import blogService from '../services/blogService';
 import { formatBlogDate } from '../utils/formatDate';
 import { ROUTES, SITE_CONFIG } from '../utils/constants';
+import { showToast } from '../components/Toast';
 
 const BlogDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [heroImageReady, setHeroImageReady] = useState(false);
+
+  const viewSessionKey = useMemo(() => (slug ? `blog_viewed_${slug}` : null), [slug]);
 
   // Load blog data
   useEffect(() => {
     const loadBlog = async () => {
       try {
-        if (!id) {
-          setError('Blog ID is required');
+        if (!slug) {
+          setError('Blog identifier is required');
           return;
         }
 
-        const blogData = await blogService.getBlogById(id);
+        let hasViewedThisSession = false;
+        if (viewSessionKey) {
+          try {
+            hasViewedThisSession = sessionStorage.getItem(viewSessionKey) === 'true';
+          } catch (storageError) {
+            console.warn('Session storage unavailable, view tracking may be duplicated:', storageError);
+          }
+        }
+        const shouldIncrement = !hasViewedThisSession;
+        const blogData = await blogService.getBlogById(slug, shouldIncrement);
         if (!blogData) {
           setError('Blog post not found');
           return;
         }
 
         setBlog(blogData);
+        setHeroImageReady(false);
+        if (shouldIncrement && viewSessionKey) {
+          try {
+            sessionStorage.setItem(viewSessionKey, 'true');
+          } catch (storageError) {
+            console.warn('Failed to persist view tracking state:', storageError);
+          }
+        }
+
+        // Update page title for SEO
+        const pageTitle = blogData.metaTitle || blogData.title || 'Blog Post';
+        document.title = `${pageTitle} | Sahil Salaria`;
+
+        // Update meta description if available
+        if (blogData.seoDescription) {
+          const metaDescription = document.querySelector('meta[name="description"]');
+          if (metaDescription) {
+            metaDescription.setAttribute('content', blogData.seoDescription);
+          }
+        }
       } catch (err) {
         console.error('Error loading blog:', err);
         setError('Failed to load blog post');
@@ -52,7 +89,12 @@ const BlogDetail = () => {
     };
 
     loadBlog();
-  }, [id]);
+
+    // Reset title on unmount
+    return () => {
+      document.title = 'Sahil Salaria — Quality Analyst & Automation Expert';
+    };
+  }, [slug, viewSessionKey]);
 
   // Share functionality
   const shareUrl = window.location.href;
@@ -61,14 +103,15 @@ const BlogDetail = () => {
   const handleShare = (platform) => {
     const encodedUrl = encodeURIComponent(shareUrl);
     const encodedTitle = encodeURIComponent(shareTitle);
-    
+
     const urls = {
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
       copy: () => {
         navigator.clipboard.writeText(shareUrl).then(() => {
-          // You could add a toast notification here
-          alert('Link copied to clipboard!');
+          showToast('Link copied to clipboard!', 'success');
+        }).catch(() => {
+          showToast('Failed to copy link', 'error');
         });
       }
     };
@@ -153,12 +196,14 @@ const BlogDetail = () => {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: { duration: 0.6, ease: "easeOut" }
     }
   };
+
+  const showHeroImage = Boolean(blog?.image && heroImageReady);
 
   return (
     <motion.div
@@ -168,15 +213,20 @@ const BlogDetail = () => {
       className="min-h-screen"
     >
       {/* Hero Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8">
+      <section className={`relative py-20 px-4 sm:px-6 lg:px-8 ${!showHeroImage ? 'bg-gradient-to-br from-primary-50 via-accent-cyan/10 to-accent-purple/10 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900' : ''}`}>
         {blog.image && (
           <div className="absolute inset-0 z-0">
             <img
               src={blog.image}
               alt={blog.title}
               className="w-full h-full object-cover"
+              style={{ display: showHeroImage ? 'block' : 'none' }}
+              onLoad={() => setHeroImageReady(true)}
+              onError={() => setHeroImageReady(false)}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+            {showHeroImage && (
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+            )}
           </div>
         )}
 
@@ -185,7 +235,10 @@ const BlogDetail = () => {
           <motion.div variants={itemVariants} className="mb-8">
             <Link
               to={ROUTES.BLOG}
-              className="inline-flex items-center space-x-2 glass-card px-4 py-2 hover:glass-border transition-all duration-200 text-white"
+              className={`inline-flex items-center space-x-2 glass-card px-4 py-2 hover:glass-border transition-all duration-200 ${showHeroImage
+                ? 'text-white'
+                : 'text-gray-900 dark:text-gray-100'
+                }`}
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Blog</span>
@@ -194,17 +247,59 @@ const BlogDetail = () => {
 
           {/* Title and Meta */}
           <motion.div variants={itemVariants} className="text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+            <h1 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight ${showHeroImage
+              ? 'text-white'
+              : 'text-gray-900 dark:text-white'
+              }`}>
               {blog.title}
             </h1>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-white/80">
+
+            <div className={`flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm ${showHeroImage
+              ? 'text-white/80'
+              : 'text-gray-700 dark:text-gray-300'
+              }`}>
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4" />
                 <span>{formatBlogDate(blog.date)}</span>
               </div>
-              <div>Published by Sahil Salaria</div>
+              {blog.lastUpdated && (
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4" />
+                  <span>Updated {formatBlogDate(blog.lastUpdated)}</span>
+                </div>
+              )}
+              <div className="flex items-center space-x-2">
+                <User className="w-4 h-4" />
+                <span>{blog.authorName || 'Sahil Salaria'}</span>
+              </div>
+              {blog.views !== undefined && (
+                <div className="flex items-center space-x-2">
+                  <Eye className="w-4 h-4" />
+                  <span>{blog.views} view{blog.views !== 1 ? 's' : ''}</span>
+                </div>
+              )}
             </div>
+
+            {/* Tags */}
+            {blog.tags && blog.tags.length > 0 && (
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-wrap justify-center gap-2 mt-4"
+              >
+                {blog.tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className={`px-3 py-1 glass rounded-full text-xs font-medium ${showHeroImage
+                      ? 'text-white/90'
+                      : 'text-gray-900 dark:text-gray-100 bg-white/50 dark:bg-gray-800/50'
+                      }`}
+                  >
+                    <Tag className="w-3 h-3 inline mr-1" />
+                    {tag}
+                  </span>
+                ))}
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </section>
@@ -218,7 +313,7 @@ const BlogDetail = () => {
           >
             {/* Blog Content */}
             <div
-              className="prose prose-lg max-w-none prose-gray dark:prose-invert prose-headings:gradient-text prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-blockquote:border-primary-500 prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-2 prose-code:py-1 prose-code:rounded"
+              className="prose prose-lg max-w-none prose-gray dark:prose-invert prose-headings:gradient-text prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-blockquote:border-primary-500 prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-2 prose-code:py-1 prose-code:rounded text-gray-700 dark:text-gray-200"
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(blog.content)
               }}
@@ -238,7 +333,7 @@ const BlogDetail = () => {
                     Help others discover this content
                   </p>
                 </div>
-                
+
                 <div className="flex space-x-3">
                   <motion.button
                     whileHover={{ scale: 1.1, y: -2 }}
@@ -249,7 +344,7 @@ const BlogDetail = () => {
                   >
                     <Linkedin className="w-5 h-5" />
                   </motion.button>
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.9 }}
@@ -259,7 +354,7 @@ const BlogDetail = () => {
                   >
                     <Twitter className="w-5 h-5" />
                   </motion.button>
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.9 }}
@@ -279,8 +374,13 @@ const BlogDetail = () => {
               className="mt-8 p-6 glass rounded-xl"
             >
               <p className="text-center text-gray-600 dark:text-gray-400 italic">
-                Published by <span className="font-semibold gradient-text">Sahil Salaria</span> — 
+                Published by <span className="font-semibold gradient-text">{blog.authorName || 'Sahil Salaria'}</span> —
                 Dedicated to innovation in Quality & Automation.
+                {blog.views !== undefined && (
+                  <span className="block mt-2 text-sm">
+                    {blog.views} view{blog.views !== 1 ? 's' : ''}
+                  </span>
+                )}
               </p>
             </motion.div>
           </motion.div>

@@ -6,13 +6,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Menu, 
-  X, 
-  Home, 
-  BookOpen, 
-  PenTool, 
-  LogIn, 
+import {
+  Menu,
+  X,
+  Home,
+  BookOpen,
   LogOut,
   User
 } from 'lucide-react';
@@ -47,11 +45,6 @@ const Navbar = () => {
     { to: ROUTES.BLOG, label: 'Blog', icon: BookOpen }
   ];
 
-  // Add authenticated routes
-  if (isAuthenticated) {
-    navLinks.push({ to: ROUTES.CREATE_BLOG, label: 'Create', icon: PenTool });
-  }
-
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -85,41 +78,31 @@ const Navbar = () => {
               <Link
                 key={to}
                 to={to}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  location.pathname === to
+                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${location.pathname === to
                     ? 'text-primary-600 dark:text-primary-400 bg-primary-50/50 dark:bg-primary-900/50'
                     : 'text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
-                }`}
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 <span>{label}</span>
               </Link>
             ))}
+          </div>
 
-            {/* Auth Actions */}
-            <div className="flex items-center space-x-4 ml-4 pl-4 border-l border-gray-200 dark:border-gray-700">
-              <ThemeToggle />
-              
-              {isAuthenticated ? (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleLogout}
-                  className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-all duration-200"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Logout</span>
-                </motion.button>
-              ) : (
-                <Link
-                  to={ROUTES.LOGIN}
-                  className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all duration-200"
-                >
-                  <LogIn className="w-4 h-4" />
-                  <span>Login</span>
-                </Link>
-              )}
-            </div>
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
+            {isAuthenticated && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleLogout}
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-all duration-200"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </motion.button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -153,11 +136,10 @@ const Navbar = () => {
                   key={to}
                   to={to}
                   onClick={closeMobileMenu}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
-                    location.pathname === to
+                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${location.pathname === to
                       ? 'text-primary-600 dark:text-primary-400 bg-primary-50/50 dark:bg-primary-900/50'
                       : 'text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
-                  }`}
+                    }`}
                 >
                   <Icon className="w-5 h-5" />
                   <span>{label}</span>
@@ -165,8 +147,8 @@ const Navbar = () => {
               ))}
 
               {/* Mobile Auth Actions */}
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                {isAuthenticated ? (
+              {isAuthenticated && (
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={handleLogout}
@@ -175,17 +157,8 @@ const Navbar = () => {
                     <LogOut className="w-5 h-5" />
                     <span>Logout</span>
                   </motion.button>
-                ) : (
-                  <Link
-                    to={ROUTES.LOGIN}
-                    onClick={closeMobileMenu}
-                    className="flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all duration-200"
-                  >
-                    <LogIn className="w-5 h-5" />
-                    <span>Login</span>
-                  </Link>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
