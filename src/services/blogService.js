@@ -93,7 +93,7 @@ class BlogService {
     }
   }
 
-  ensureLocalSlugs(blogs) {
+  ensureLocalSlugs(blogs, persist = true) {
     if (!Array.isArray(blogs)) return blogs;
 
     const used = new Map();
@@ -121,7 +121,7 @@ class BlogService {
       }
     });
 
-    if (modified) {
+    if (modified && persist) {
       this.saveStoredBlogs(blogs);
     }
 
@@ -208,28 +208,41 @@ class BlogService {
           }
         }
 
-        const blogs = [];
+        const processedBlogs = [];
 
         for (const docSnap of querySnapshot.docs) {
           const data = docSnap.data();
           if (!data.slug) {
             await this.ensureFirestoreSlug(docSnap.id, data);
           }
-          blogs.push({
+
+          const blog = {
             id: docSnap.id,
             ...this.convertTimestamps(data),
-            slug: data.slug
-          });
+            slug: data.slug,
+            published: data.published !== false
+          };
+
+          // Skip unpublished posts for unauthenticated users unless includeDrafts requested
+          if (!includeDrafts && !authService.isAuthenticated() && blog.published === false) {
+            continue;
+          }
+
+          if (!needsClientSideFilter && blog.published === false && !includeDrafts) {
+            continue;
+          }
+
+          processedBlogs.push(blog);
         }
 
-        // If index is missing, filter published posts client-side
-        if (needsClientSideFilter || (!includeDrafts && !authService.isAuthenticated())) {
-          blogs = blogs.filter(blog =>
-            blog.published === true || (blog.published === undefined && !needsClientSideFilter)
-          );
-        }
+        // Sort by date descending to ensure consistent ordering
+        processedBlogs.sort((a, b) => {
+          const dateA = a.date instanceof Date ? a.date : new Date(a.date);
+          const dateB = b.date instanceof Date ? b.date : new Date(b.date);
+          return dateB - dateA;
+        });
 
-        return blogs;
+        return processedBlogs;
       } else {
         // localStorage
         const blogs = this.getStoredBlogs();
