@@ -7,7 +7,11 @@ import { slugify } from '../src/utils/slugify.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const SITE_URL = (process.env.VITE_SITE_URL || 'https://sahil-portfolio-751a1.web.app').replace(/\/+$/, '');
+// Use GitHub Pages URL if building for GitHub Pages, otherwise use Firebase URL
+const isGitHubPages = process.env.VITE_GITHUB_PAGES === 'true';
+const SITE_URL = (process.env.VITE_SITE_URL ||
+  (isGitHubPages ? 'https://sahilsalaria811.github.io/My-portfolio' : 'https://sahil-portfolio-751a1.web.app')
+).replace(/\/+$/, '');
 const DIST_DIR = path.resolve(__dirname, '../dist');
 const SITEMAP_PATH = path.join(DIST_DIR, 'sitemap.xml');
 const ROBOTS_PATH = path.join(DIST_DIR, 'robots.txt');
@@ -169,12 +173,12 @@ async function run() {
     firestoreBlogs.length > 0
       ? firestoreBlogs
       : PLACEHOLDER_BLOGS.map((blog, index) => ({
-          id: blog.id || String(index + 1),
-          slug: blog.slug || slugify(blog.title),
-          title: blog.title,
-          date: blog.date,
-          lastUpdated: blog.date
-        }));
+        id: blog.id || String(index + 1),
+        slug: blog.slug || slugify(blog.title),
+        title: blog.title,
+        date: blog.date,
+        lastUpdated: blog.date
+      }));
 
   await writeSitemap(blogs);
   await writeRobots();

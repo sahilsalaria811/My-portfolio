@@ -238,28 +238,19 @@ src/
 
 ### GitHub Pages
 
-**Automatic Deployment (Recommended):**
+**Option 1: Manual Deployment**
+1. Build for GitHub Pages: `npm run build:github`
+2. Push the `dist` folder contents to the `gh-pages` branch, or
+3. Use a tool like `gh-pages`: `npx gh-pages -d dist`
 
-1. Enable GitHub Pages in your repository settings:
-   - Go to Settings → Pages
-   - Source: GitHub Actions
-2. Push to `main` branch - the workflow will automatically build and deploy
-3. Your site will be available at: `https://<username>.github.io/My-portfolio/`
+**Option 2: Automated Deployment (Recommended)**
+1. Enable GitHub Pages in your repository settings (Settings → Pages → Source: GitHub Actions)
+2. Push to `main` branch - the workflow (`.github/workflows/deploy-gh-pages.yml`) will automatically:
+   - Build with GitHub Pages base path (`/My-portfolio/`)
+   - Deploy to GitHub Pages
+3. Your site will be available at: `https://sahilsalaria811.github.io/My-portfolio/`
 
-**Manual Deployment:**
-
-1. Build with GitHub Pages base path:
-   ```bash
-   VITE_BASE_PATH=/My-portfolio/ npm run build
-   ```
-2. Copy the `dist` folder contents to your `gh-pages` branch root
-3. Push to GitHub:
-   ```bash
-   git subtree push --prefix dist origin gh-pages
-   ```
-4. Enable GitHub Pages in repository settings (Source: `gh-pages` branch)
-
-**Note:** Make sure to set `VITE_BASE_PATH=/My-portfolio/` when building for GitHub Pages, or use the GitHub Actions workflow which handles this automatically.
+**Note:** Make sure to set up GitHub Secrets for Firebase environment variables if you're using Firebase features.
 
 ## 🔍 SEO & Sharing
 
