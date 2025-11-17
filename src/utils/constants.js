@@ -10,7 +10,7 @@ export const SITE_CONFIG = {
   phone: '+91 9878977894',
   phoneAlt: '+91 9781677894',
   social: {
-    linkedin: 'https://www.linkedin.com/in/sahilsalaria',
+    linkedin: 'https://www.linkedin.com/in/sahil-salaria/',
     github: 'https://github.com/sahilsalaria811',
     twitter: 'https://x.com/Iamsahilsalaria'
   }

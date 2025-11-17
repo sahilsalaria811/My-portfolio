@@ -7,9 +7,12 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import AppRoutes from './routes/AppRoutes';
 
+// Get base path from environment or default to root
+const BASE_PATH = import.meta.env.VITE_BASE_PATH || '/';
+
 function App() {
   return (
-    <Router>
+    <Router basename={BASE_PATH}>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

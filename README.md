@@ -226,13 +226,40 @@ src/
 └── index.css             # Global styles
 ```
 
-## 🚀 Deployment (Firebase Hosting)
+## 🚀 Deployment
+
+### Firebase Hosting
 
 1. Install CLI: `npm i -g firebase-tools` and `firebase login`
 2. Build: `npm run build`
 3. Ensure `firebase.json` exists (public: `dist`, SPA rewrites enabled)
 4. Deploy: `firebase deploy --only hosting`
 5. Hosting URL will be printed in the terminal
+
+### GitHub Pages
+
+**Automatic Deployment (Recommended):**
+
+1. Enable GitHub Pages in your repository settings:
+   - Go to Settings → Pages
+   - Source: GitHub Actions
+2. Push to `main` branch - the workflow will automatically build and deploy
+3. Your site will be available at: `https://<username>.github.io/My-portfolio/`
+
+**Manual Deployment:**
+
+1. Build with GitHub Pages base path:
+   ```bash
+   VITE_BASE_PATH=/My-portfolio/ npm run build
+   ```
+2. Copy the `dist` folder contents to your `gh-pages` branch root
+3. Push to GitHub:
+   ```bash
+   git subtree push --prefix dist origin gh-pages
+   ```
+4. Enable GitHub Pages in repository settings (Source: `gh-pages` branch)
+
+**Note:** Make sure to set `VITE_BASE_PATH=/My-portfolio/` when building for GitHub Pages, or use the GitHub Actions workflow which handles this automatically.
 
 ## 🔍 SEO & Sharing
 
